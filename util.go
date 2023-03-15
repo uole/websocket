@@ -201,8 +201,8 @@ func equalASCIIFold(s, t string) bool {
 // tokenListContainsValue returns true if the 1#token header with the given
 // name contains a token equal to value with ASCII case folding.
 func tokenListContainsValue(header http.Header, name string, value string) bool {
-headers:
 	tokens := textproto.MIMEHeader(header).Values(name)
+headers:
 	if tokens == nil {
 		return false
 	}
