@@ -9,6 +9,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/textproto"
 	"net/url"
 	"strings"
 	"time"
@@ -109,7 +110,11 @@ func (u *Upgrader) selectSubprotocol(r *http.Request, responseHeader http.Header
 			}
 		}
 	} else if responseHeader != nil {
-		return responseHeader.Get("Sec-Websocket-Protocol")
+		s := responseHeader.Get("Sec-Websocket-Protocol")
+		if s == "" {
+			s = responseHeader.Get("Sec-WebSocket-Protocol")
+		}
+		return s
 	}
 	return ""
 }
@@ -137,8 +142,8 @@ func (u *Upgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeade
 		return u.returnError(w, r, http.StatusMethodNotAllowed, badHandshake+"request method is not GET")
 	}
 
-	if !tokenListContainsValue(r.Header, "Sec-Websocket-Version", "13") {
-		return u.returnError(w, r, http.StatusBadRequest, "websocket: unsupported version: 13 not found in 'Sec-Websocket-Version' header")
+	if !tokenListContainsValue(r.Header, "Sec-Websocket-Version", "13") && !tokenListContainsValue(r.Header, "Sec-WebSocket-Version", "13") {
+		return u.returnError(w, r, http.StatusBadRequest, "websocket: unsupported version: 13 not found in 'Sec-WebSocket-Version' header")
 	}
 
 	if _, ok := responseHeader["Sec-Websocket-Extensions"]; ok {
@@ -153,7 +158,10 @@ func (u *Upgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeade
 		return u.returnError(w, r, http.StatusForbidden, "websocket: request origin not allowed by Upgrader.CheckOrigin")
 	}
 
-	challengeKey := r.Header.Get("Sec-Websocket-Key")
+	challengeKey := r.Header.Get("Sec-WebSocket-Key")
+	if challengeKey == "" {
+		r.Header.Get("Sec-Websocket-Key")
+	}
 	if !isValidChallengeKey(challengeKey) {
 		return u.returnError(w, r, http.StatusBadRequest, "websocket: not a websocket handshake: 'Sec-WebSocket-Key' header must be Base64 encoded value of 16-byte in length")
 	}
@@ -228,7 +236,7 @@ func (u *Upgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeade
 		p = append(p, "Sec-WebSocket-Extensions: permessage-deflate; server_no_context_takeover; client_no_context_takeover\r\n"...)
 	}
 	for k, vs := range responseHeader {
-		if k == "Sec-Websocket-Protocol" {
+		if textproto.CanonicalMIMEHeaderKey(k) == "Sec-Websocket-Protocol" {
 			continue
 		}
 		for _, v := range vs {
@@ -310,6 +318,9 @@ func Upgrade(w http.ResponseWriter, r *http.Request, responseHeader http.Header,
 // Sec-Websocket-Protocol header.
 func Subprotocols(r *http.Request) []string {
 	h := strings.TrimSpace(r.Header.Get("Sec-Websocket-Protocol"))
+	if h == "" {
+		h = strings.TrimSpace(r.Header.Get("Sec-WebSocket-Protocol"))
+	}
 	if h == "" {
 		return nil
 	}
