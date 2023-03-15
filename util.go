@@ -202,10 +202,10 @@ func equalASCIIFold(s, t string) bool {
 // name contains a token equal to value with ASCII case folding.
 func tokenListContainsValue(header http.Header, name string, value string) bool {
 	tokens := textproto.MIMEHeader(header).Values(name)
-headers:
 	if tokens == nil {
 		return false
 	}
+headers:
 	for _, s := range tokens {
 		for {
 			var t string
