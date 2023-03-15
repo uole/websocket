@@ -1,16 +1,7 @@
-# Gorilla WebSocket
+# WebSocket
 
 [![GoDoc](https://godoc.org/github.com/gorilla/websocket?status.svg)](https://godoc.org/github.com/gorilla/websocket)
 [![CircleCI](https://circleci.com/gh/gorilla/websocket.svg?style=svg)](https://circleci.com/gh/gorilla/websocket)
-
-Gorilla WebSocket is a [Go](http://golang.org/) implementation of the
-[WebSocket](http://www.rfc-editor.org/rfc/rfc6455.txt) protocol.
-
----
-
-**The Gorilla project has been archived, and is no longer under active maintainenance. You can read more here: https://github.com/gorilla#gorilla-toolkit**
-
----
 
 ### Documentation
 
@@ -22,17 +13,17 @@ Gorilla WebSocket is a [Go](http://golang.org/) implementation of the
 
 ### Status
 
-The Gorilla WebSocket package provides a complete and tested implementation of
+The WebSocket package provides a complete and tested implementation of
 the [WebSocket](http://www.rfc-editor.org/rfc/rfc6455.txt) protocol. The
 package API is stable.
 
 ### Installation
 
-    go get github.com/gorilla/websocket
+    go get github.com/uole/websocket
 
 ### Protocol Compliance
 
-The Gorilla WebSocket package passes the server tests in the [Autobahn Test
+The WebSocket package passes the server tests in the [Autobahn Test
 Suite](https://github.com/crossbario/autobahn-testsuite) using the application in the [examples/autobahn
 subdirectory](https://github.com/gorilla/websocket/tree/master/examples/autobahn).
 
